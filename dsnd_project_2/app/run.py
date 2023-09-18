@@ -8,7 +8,7 @@ from nltk.tokenize import word_tokenize
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+import sklearn.pipeline as Pipeline
 from sqlalchemy import create_engine
 
 app = Flask(__name__)
@@ -27,8 +27,8 @@ def tokenize(text):
 
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/data1.db')
+df = pd.read_sql_table('data1', engine)
 
 # load model
 model = joblib.load("../models/your_model_name.pkl")

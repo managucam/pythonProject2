@@ -7,49 +7,44 @@ Trains and tunes a model using GridSearchCV
 Outputs results on the test set
 Exports the final model as a pickle file"""
 
-# import libraries
-import pandas as pd
-from sqlalchemy import create_engine
-
-# load data from database
-engine = create_engine('sqlite:///data1.db')
-df = pd.read_sql_table('data1', engine)
-X = df['message']
-Y = df['related']
-
-import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
-
-from nltk import word_tokenize
-from nltk.corpus import stopwords
-
-
-def tokenize(text):
-    words = word_tokenize(text.lower())
-
-    words = [w for w in words if w not in stopwords.words("english")]
-    return words
-
-
-df = tokenize(X[0])
-
-tokens = X.apply(tokenize)
-# tokens
 
 import sys
 
 
 def load_data(database_filepath):
-    pass
+    df = pd.read_sql_table(database_filepath, engine)
+    X = df['message']
+    y = df['related']
+    return X, y
 
 
 def tokenize(text):
-    pass
+    tokens = word_tokenize(text)
+    lemmatizer = WordNetLemmatizer()
+
+    clean_tokens = []
+    for tok in tokens:
+        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
+        clean_tokens.append(clean_tok)
+
+    return clean_tokens
 
 
 def build_model():
-    pass
+    X, y = load_data()
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
+        ('clf', RandomForestClassifier())
+    ])
+
+    # train classifier
+    pipeline.fit(X_train, y_train)
+
+    # predict on test data
+    y_pred = pipeline.predict(X_test)
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
@@ -90,3 +85,42 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+def display_results(y_test, y_pred):
+    labels = np.unique(y_pred)
+    confusion_mat = confusion_matrix(y_test, y_pred, labels=labels)
+    accuracy = (y_pred == y_test).mean()
+
+    print("Labels:", labels)
+    print("Confusion Matrix:\n", confusion_mat)
+    print("Accuracy:", accuracy)
+
+
+def main():
+    # load data and perform train text split
+    X, y = load_data()
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+    # instantiate transformers and classifiers
+    vect = CountVectorizer(tokenizer=tokenize)
+    tfidf = TfidfTransformer()
+    clf = RandomForestClassifier()
+
+    # fit and transform the training data
+    X_train_counts = vect.fit_transform(X_train)
+    X_train_tfidf = tfidf.fit_transform(X_train_counts)
+
+    # train classifier
+    clf.fit(X_train_tfidf, y_train)
+
+    # transform (no fitting) the test data
+    X_test_counts = vect.transform(X_test)
+    X_test_tfidf = tfidf.transform(X_test_counts)
+    # predict on test data
+    y_pred = clf.predict(X_test_tfidf)
+
+    # display results
+    display_results(y_test, y_pred)
+
+
+main()
