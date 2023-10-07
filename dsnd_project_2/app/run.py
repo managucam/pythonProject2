@@ -1,4 +1,5 @@
 import json
+import joblib
 import plotly
 import pandas as pd
 
@@ -27,11 +28,11 @@ def tokenize(text):
 
 
 # load data
-engine = create_engine('sqlite:///../data/data1.db')
-df = pd.read_sql_table('data1', engine)
+engine = create_engine('sqlite:///../data/my_database.db')
+df = pd.read_sql_table('my_database', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/my_model.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model

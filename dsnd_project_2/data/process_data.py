@@ -1,5 +1,6 @@
 import sys
-
+import pandas as pd
+from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
     # load messages dataset
@@ -50,8 +51,8 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
-    engine = create_engine('sqlite:///{}.db'.format(database_filename))
-    df.to_sql(database_filename, engine, index=False)
+    engine = create_engine('sqlite:///'+database_filename)
+    df.to_sql(database_filename, engine, if_exists = 'replace', index=False)
     pass
 
 
@@ -83,21 +84,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # testing code
-    # import pandas as pd
-    # from sqlalchemy import create_engine
-    # messages_filepath = 'messages.csv'
-    # categories_filepath = 'categories.csv'
-    # database_filepath = 'data1'
-    # print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
-    #       .format(messages_filepath, categories_filepath))
-    # df = load_data(messages_filepath, categories_filepath)
-    #
-    # print('Cleaning data...')
-    # df = clean_data(df)
-    #
-    # print('Saving data...\n    DATABASE: {}'.format(database_filepath))
-    # save_data(df, database_filepath)
-    #
-    # print('Cleaned data saved to database!')
-    # print(df.head())
