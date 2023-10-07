@@ -122,5 +122,43 @@ def main():
     # display results
     display_results(y_test, y_pred)
 
+if __name__ == '__main__':
+    # main()
 
-main()
+    import json
+    import plotly
+    import pandas as pd
+
+    from nltk.stem import WordNetLemmatizer
+    from nltk.tokenize import word_tokenize
+
+    from flask import Flask
+    from flask import render_template, request, jsonify
+    from plotly.graph_objs import Bar
+    import sklearn.pipeline as Pipeline
+    from sqlalchemy import create_engine
+
+    # load data and perform train text split
+    X, y = load_data()
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+    # # instantiate transformers and classifiers
+    # vect = CountVectorizer(tokenizer=tokenize)
+    # tfidf = TfidfTransformer()
+    # clf = RandomForestClassifier()
+    #
+    # # fit and transform the training data
+    # X_train_counts = vect.fit_transform(X_train)
+    # X_train_tfidf = tfidf.fit_transform(X_train_counts)
+    #
+    # # train classifier
+    # clf.fit(X_train_tfidf, y_train)
+    #
+    # # transform (no fitting) the test data
+    # X_test_counts = vect.transform(X_test)
+    # X_test_tfidf = tfidf.transform(X_test_counts)
+    # # predict on test data
+    # y_pred = clf.predict(X_test_tfidf)
+    #
+    # # display results
+    # display_results(y_test, y_pred)
