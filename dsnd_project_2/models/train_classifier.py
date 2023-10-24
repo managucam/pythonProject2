@@ -20,6 +20,7 @@ import pickle
 
 
 def load_data(database_filepath):
+    """This function loads the data from a SQL database and returns the X, Y and category names"""
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('DisasterResponse', engine)
     X = df.message
@@ -29,6 +30,7 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """This function tokenize the text so that it can be used by the ML pipeline"""
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     detected_urls = re.findall(url_regex, text)
     for url in detected_urls:
@@ -46,6 +48,7 @@ def tokenize(text):
 
 
 def build_model():
+    """This functions creates the Machine Learning model"""
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -62,12 +65,14 @@ def build_model():
 
 
 def evaluate_model(model, X_test, y_test, category_names):
+    """This function evaluates the model by creating a classification report"""
     y_pred = model.predict(X_test)
     class_report = classification_report(y_test, y_pred, target_names=category_names)
     print(class_report)
 
 
 def save_model(model, model_filepath):
+    """This function saves the model within the repository"""
     with open(model_filepath, 'wb') as file:
         pickle.dump(model, file)
 
