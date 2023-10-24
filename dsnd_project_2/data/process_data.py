@@ -3,6 +3,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
+    """This function reads the messages and categories data from CSVs into pandas dataframes and merges them"""
     # load messages dataset
     messages = pd.read_csv(messages_filepath).set_index('id')
 
@@ -15,6 +16,7 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """This function cleans the categories data so that we can later use it in the ML pipeline"""
     # create a dataframe of the 36 individual category columns
     categories = df['categories'].str.split(';', expand=True)
 
@@ -30,6 +32,9 @@ def clean_data(df):
         categories[column] = categories[column].str.slice(start=-1)
         # convert column from string to numeric
         categories[column] = categories[column].astype(int)
+
+    # replace 2 for 1s to make columns binary (0, 1)
+    categories.replace(2, 1, inplace=True)
 
     # drop the original categories column from `df`
     df.drop(['categories'], axis=1, inplace=True)
@@ -51,6 +56,7 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """This function saves the previously manipulated data into an SQL database"""
     engine = create_engine('sqlite:///'+database_filename)
     df.to_sql(database_filename, engine, if_exists = 'replace', index=False)
     pass
