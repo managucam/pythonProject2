@@ -39,12 +39,15 @@ model = joblib.load("../models/my_model.pkl")
 @app.route('/index')
 def index():
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
 
+    # category counts and names data for visuals
+    categories = df[df.columns[4:]]
+    categories_counts = (categories.mean()*categories.shape[0]).sort_values(ascending=False)
+    categories_names = list(categories_counts.index)
+
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
@@ -63,6 +66,26 @@ def index():
                     'title': "Genre"
                 }
             }
+        },
+        # category visualization
+        {
+            'data': [
+                Bar(
+                    x=categories_names,
+                    y=categories_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Categories Message',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories"
+                }
+            }
+
         }
     ]
 
