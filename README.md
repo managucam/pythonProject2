@@ -2,6 +2,10 @@
 
 [GitHub repo](https://github.com/managucam/pythonProject2)
 
+### Project summary
+The project contains an ETL (Extract, Transform, Load) data pipeline and a machine learning pipeline categorizes these events so that messages are sent to an appropriate disaster relief agency.
+Lastly, it includes a web app where emergency workers can input a new message and get classification results in several categories.
+
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
 
